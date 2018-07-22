@@ -104,6 +104,19 @@ func (d *VBox42Driver) Import(name string, path string, flags []string) error {
 	return d.VBoxManage(args...)
 }
 
+func (d *VBox42Driver) CloneVM(vmname string, snapshot string, name string, flags []string) error {
+	args := []string{
+		"clonevm", vmname,
+		"--snapshot", snapshot,
+		"--options", "link",
+		"--name", name,
+		"--register",
+	}
+	args = append(args, flags...)
+
+	return d.VBoxManage(args...)
+}
+
 func (d *VBox42Driver) IsRunning(name string) (bool, error) {
 	var stdout bytes.Buffer
 
