@@ -1,4 +1,4 @@
-package ovf
+package vbox
 
 import (
 	"fmt"
@@ -36,7 +36,8 @@ type Config struct {
 	GuestAdditionsURL    string   `mapstructure:"guest_additions_url"`
 	ImportFlags          []string `mapstructure:"import_flags"`
 	ImportOpts           string   `mapstructure:"import_opts"`
-	SourcePath           string   `mapstructure:"source_path"`
+	CloneVMName           string   `mapstructure:"clone_from_vm_name"`
+	Snapshot           string   `mapstructure:"clone_from_snapshot"`
 	TargetPath           string   `mapstructure:"target_path"`
 	VMName               string   `mapstructure:"vm_name"`
 	KeepRegistered       bool     `mapstructure:"keep_registered"`
@@ -96,19 +97,8 @@ func NewConfig(raws ...interface{}) (*Config, []string, error) {
 	c.ChecksumType = strings.ToLower(c.ChecksumType)
 	c.Checksum = strings.ToLower(c.Checksum)
 
-	if c.SourcePath == "" {
-		errs = packer.MultiErrorAppend(errs, fmt.Errorf("source_path is required"))
-	} else {
-		c.SourcePath, err = common.ValidatedURL(c.SourcePath)
-		if err != nil {
-			errs = packer.MultiErrorAppend(errs, fmt.Errorf("source_path is invalid: %s", err))
-		}
-		fileOK := common.FileExistsLocally(c.SourcePath)
-		if !fileOK {
-			packer.MultiErrorAppend(errs,
-				fmt.Errorf("Source file '%s' needs to exist at time of config validation!", c.SourcePath))
-		}
-
+	if c.CloneVMName == "" {
+		errs = packer.MultiErrorAppend(errs, fmt.Errorf("clone_from_vm_name is required"))
 	}
 
 	validMode := false

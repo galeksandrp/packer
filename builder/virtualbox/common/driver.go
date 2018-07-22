@@ -28,6 +28,9 @@ type Driver interface {
 	// Import a VM
 	Import(string, string, []string) error
 
+	// Clone a VM
+	CloneVM(string, string, string, []string) error
+
 	// The complete path to the Guest Additions ISO
 	Iso() (string, error)
 

@@ -1,4 +1,4 @@
-package ovf
+package vbox
 
 import (
 	"context"
@@ -13,6 +13,8 @@ import (
 type StepImport struct {
 	Name        string
 	ImportFlags []string
+	CloneVMName  string
+	Snapshot string
 
 	vmName string
 }
@@ -20,11 +22,10 @@ type StepImport struct {
 func (s *StepImport) Run(_ context.Context, state multistep.StateBag) multistep.StepAction {
 	driver := state.Get("driver").(vboxcommon.Driver)
 	ui := state.Get("ui").(packer.Ui)
-	vmPath := state.Get("vm_path").(string)
 
-	ui.Say(fmt.Sprintf("Importing VM: %s", vmPath))
-	if err := driver.Import(s.Name, vmPath, s.ImportFlags); err != nil {
-		err := fmt.Errorf("Error importing VM: %s", err)
+	ui.Say(fmt.Sprintf("Cloning VM: %s", s.CloneVMName))
+	if err := driver.CloneVM(s.CloneVMName, s.Snapshot, s.Name, s.ImportFlags); err != nil {
+		err := fmt.Errorf("Error cloning VM: %s", err)
 		state.Put("error", err)
 		ui.Error(err.Error())
 		return multistep.ActionHalt

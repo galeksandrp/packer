@@ -1,4 +1,4 @@
-package ovf
+package vbox
 
 import (
 	"bytes"

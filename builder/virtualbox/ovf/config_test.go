@@ -1,4 +1,4 @@
-package ovf
+package vbox
 
 import (
 	"fmt"
@@ -13,7 +13,7 @@ func testConfig(t *testing.T) map[string]interface{} {
 	return map[string]interface{}{
 		"ssh_username":     "foo",
 		"shutdown_command": "foo",
-		"source_path":      "config_test.go",
+		"clone_from_vm_name":      "config_test.go",
 	}
 }
 
@@ -56,18 +56,18 @@ func TestNewConfig_InvalidFloppies(t *testing.T) {
 func TestNewConfig_sourcePath(t *testing.T) {
 	// Okay, because it gets caught during download
 	c := testConfig(t)
-	delete(c, "source_path")
+	delete(c, "clone_from_vm_name")
 	_, warns, err := NewConfig(c)
 	if len(warns) > 0 {
 		t.Fatalf("bad: %#v", warns)
 	}
 	if err == nil {
-		t.Fatalf("should error with empty `source_path`")
+		t.Fatalf("should error with empty `clone_from_vm_name`")
 	}
 
 	// Want this to fail on validation
 	c = testConfig(t)
-	c["source_path"] = "/i/dont/exist"
+	c["clone_from_vm_name"] = "/i/dont/exist"
 	_, warns, err = NewConfig(c)
 	if len(warns) > 0 {
 		t.Fatalf("bad: %#v", warns)
@@ -78,7 +78,7 @@ func TestNewConfig_sourcePath(t *testing.T) {
 
 	// Bad
 	c = testConfig(t)
-	c["source_path"] = "ftp://i/dont/exist"
+	c["clone_from_vm_name"] = "ftp://i/dont/exist"
 	_, warns, err = NewConfig(c)
 	if len(warns) > 0 {
 		t.Fatalf("bad: %#v", warns)
@@ -92,7 +92,7 @@ func TestNewConfig_sourcePath(t *testing.T) {
 	defer os.Remove(tf.Name())
 
 	c = testConfig(t)
-	c["source_path"] = tf.Name()
+	c["clone_from_vm_name"] = tf.Name()
 	_, warns, err = NewConfig(c)
 	if len(warns) > 0 {
 		t.Fatalf("bad: %#v", warns)
@@ -108,7 +108,7 @@ func TestNewConfig_shutdown_timeout(t *testing.T) {
 	defer os.Remove(tf.Name())
 
 	// Expect this to fail
-	c["source_path"] = tf.Name()
+	c["clone_from_vm_name"] = tf.Name()
 	c["shutdown_timeout"] = "NaN"
 	_, warns, err := NewConfig(c)
 	if len(warns) > 0 {
