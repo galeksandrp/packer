@@ -43,6 +43,7 @@ import (
 	tritonbuilder "github.com/hashicorp/packer/builder/triton"
 	virtualboxisobuilder "github.com/hashicorp/packer/builder/virtualbox/iso"
 	virtualboxovfbuilder "github.com/hashicorp/packer/builder/virtualbox/ovf"
+	virtualboxvboxbuilder "github.com/hashicorp/packer/builder/virtualbox/vbox"
 	vmwareisobuilder "github.com/hashicorp/packer/builder/vmware/iso"
 	vmwarevmxbuilder "github.com/hashicorp/packer/builder/vmware/vmx"
 	alicloudimportpostprocessor "github.com/hashicorp/packer/post-processor/alicloud-import"
@@ -113,6 +114,7 @@ var Builders = map[string]packer.Builder{
 	"triton":              new(tritonbuilder.Builder),
 	"virtualbox-iso":      new(virtualboxisobuilder.Builder),
 	"virtualbox-ovf":      new(virtualboxovfbuilder.Builder),
+	"virtualbox-vbox":     new(virtualboxvboxbuilder.Builder),
 	"vmware-iso":          new(vmwareisobuilder.Builder),
 	"vmware-vmx":          new(vmwarevmxbuilder.Builder),
 }

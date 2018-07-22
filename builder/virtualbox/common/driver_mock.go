@@ -23,6 +23,13 @@ type DriverMock struct {
 	ImportFlags  []string
 	ImportErr    error
 
+	CloneVMCalled  bool
+	CloneVMVMName  string
+	CloneVMSnapshot  string
+	CloneVMName  string
+	CloneVMFlags  []string
+	CloneVMErr    error
+
 	IsoCalled bool
 	IsoErr    error
 
@@ -71,6 +78,15 @@ func (d *DriverMock) Import(name string, path string, flags []string) error {
 	d.ImportPath = path
 	d.ImportFlags = flags
 	return d.ImportErr
+}
+
+func (d *DriverMock) CloneVM(vmname string, snapshot string, name string, flags []string) error {
+	d.CloneVMCalled = true
+	d.CloneVMVMName = vmname
+	d.CloneVMSnapshot = snapshot
+	d.CloneVMName = name
+	d.CloneVMFlags = flags
+	return d.CloneVMErr
 }
 
 func (d *DriverMock) Iso() (string, error) {
