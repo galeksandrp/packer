@@ -10,7 +10,6 @@ import (
 	"strings"
 
 	"github.com/hashicorp/packer/common"
-	commonhelper "github.com/hashicorp/packer/helper/common"
 	"github.com/hashicorp/packer/packer"
 	"github.com/hashicorp/packer/template/interpolate"
 )
@@ -71,9 +70,9 @@ func Run(ui packer.Ui, config *Config) (bool, error) {
 		flattenedCmd := strings.Join(interpolatedCmds, " ")
 		cmd := &packer.RemoteCmd{Command: flattenedCmd}
 		sanitized := flattenedCmd
-		if len(getWinRMPassword(config.PackerBuildName)) > 0 {
+		if len(config.Winrmpassword) > 0 {
 			sanitized = strings.Replace(flattenedCmd,
-				getWinRMPassword(config.PackerBuildName), "*****", -1)
+				config.Winrmpassword, "*****", -1)
 		}
 		log.Printf("[INFO] (shell-local): starting local command: %s", sanitized)
 		if err := cmd.StartWithUi(comm, ui); err != nil {
@@ -110,7 +109,7 @@ func createInlineScriptFile(config *Config) (string, error) {
 
 	// generate context so you can interpolate the command
 	config.Ctx.Data = &EnvVarsTemplate{
-		WinRMPassword: getWinRMPassword(config.PackerBuildName),
+		WinRMPassword: config.Winrmpassword,
 	}
 
 	for _, command := range config.Inline {
@@ -144,7 +143,7 @@ func createInterpolatedCommands(config *Config, script string, flattenedEnvVars 
 		Vars:          flattenedEnvVars,
 		Script:        script,
 		Command:       script,
-		WinRMPassword: getWinRMPassword(config.PackerBuildName),
+		WinRMPassword: config.Winrmpassword,
 	}
 
 	interpolatedCmds := make([]string, len(config.ExecuteCommand))
@@ -174,7 +173,7 @@ func createFlattenedEnvVars(config *Config) (string, error) {
 
 	// interpolate environment variables
 	config.Ctx.Data = &EnvVarsTemplate{
-		WinRMPassword: getWinRMPassword(config.PackerBuildName),
+		WinRMPassword: config.Winrmpassword,
 	}
 	// Split vars into key/value components
 	for _, envVar := range config.Vars {
@@ -200,9 +199,4 @@ func createFlattenedEnvVars(config *Config) (string, error) {
 		flattened += fmt.Sprintf(config.EnvVarFormat, key, envVars[key])
 	}
 	return flattened, nil
-}
-
-func getWinRMPassword(buildName string) string {
-	winRMPass, _ := commonhelper.RetrieveSharedState("winrm_password", buildName)
-	return winRMPass
 }

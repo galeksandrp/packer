@@ -53,6 +53,9 @@ type Config struct {
 	UseLinuxPathing bool `mapstructure:"use_linux_pathing"`
 
 	Ctx interpolate.Context
+
+	// internal use only; for the provisioner.
+	Winrmpassword string
 }
 
 func Decode(config *Config, raws ...interface{}) error {
