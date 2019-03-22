@@ -46,6 +46,7 @@ func newClientWithMux(mux *muxBroker, streamId uint32) (*Client, error) {
 		WriteExt:    true,
 	}
 	clientCodec := codec.GoRpc.ClientCodec(clientConn, h)
+	// ctx, cancel := context.WithCancel(context.Background())
 
 	return &Client{
 		mux:      mux,
