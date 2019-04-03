@@ -2,6 +2,7 @@ package docker
 
 import (
 	"archive/tar"
+	"context"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -27,7 +28,9 @@ type Communicator struct {
 	lock          sync.Mutex
 }
 
-func (c *Communicator) Start(remote *packer.RemoteCmd) error {
+var _ packer.Communicator = new(Communicator)
+
+func (c *Communicator) Start(ctx context.Context, remote *packer.RemoteCmd) error {
 	dockerArgs := []string{
 		"exec",
 		"-i",
