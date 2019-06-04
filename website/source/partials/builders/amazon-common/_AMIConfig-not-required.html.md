@@ -82,8 +82,8 @@
     
 -   `snapshot_tags` (TagMap) - Tags to apply to snapshot.
     They will override AMI tags if already applied to snapshot. This is a
-    template engine, see Build template
-    data for more information.
+    [template engine](../templates/engine.html), see [Build template
+    data](#build-template-data) for more information.
     
 -   `snapshot_users` ([]string) - A list of account IDs that have
     access to create volumes from the snapshot(s). By default no additional
