@@ -149,7 +149,7 @@ type RunConfig struct {
 	//     `security_group_ids`. Any filter described in the docs for
 	//     [DescribeSecurityGroups](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeSecurityGroups.html)
 	//     is valid.
-
+	//
 	// `security_group_ids` take precedence over this.
 	SecurityGroupFilter SecurityGroupFilterOptions `mapstructure:"security_group_filter" required:"false"`
 	// Tags to apply to the instance
