@@ -242,8 +242,39 @@ type RunConfig struct {
 	// Requires spot_price to be
 	// set. This tells Packer to apply tags to the spot request that is issued.
 	SpotTags map[string]string `mapstructure:"spot_tags" required:"false"`
-	// Filters used to populate the subnet_id field.
+	// Filters used to populate the `subnet_id` field.
 	// Example:
+	//
+	//   ``` json
+	//   {
+	//     "subnet_filter": {
+	//       "filters": {
+	//         "tag:Class": "build"
+	//       },
+	//       "most_free": true,
+	//       "random": false
+	//     }
+	//   }
+	//   ```
+	//
+	//   This selects the Subnet with tag `Class` with the value `build`, which has
+	//   the most free IP addresses. NOTE: This will fail unless *exactly* one
+	//   Subnet is returned. By using `most_free` or `random` one will be selected
+	//   from those matching the filter.
+	//
+	//   -   `filters` (map of strings) - filters used to select a `subnet_id`.
+	//       NOTE: This will fail unless *exactly* one Subnet is returned. Any
+	//       filter described in the docs for
+	//       [DescribeSubnets](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeSubnets.html)
+	//       is valid.
+	//
+	//   -   `most_free` (boolean) - The Subnet with the most free IPv4 addresses
+	//       will be used if multiple Subnets matches the filter.
+	//
+	//   -   `random` (boolean) - A random Subnet will be used if multiple Subnets
+	//       matches the filter. `most_free` have precendence over this.
+	//
+	//   `subnet_id` take precedence over this.
 	SubnetFilter SubnetFilterOptions `mapstructure:"subnet_filter" required:"false"`
 	// If using VPC, the ID of the subnet, such as
 	// subnet-12345def, where Packer will launch the EC2 instance. This field is
