@@ -71,49 +71,6 @@ builder.
 
 <%= partial "partials/builders/aws-common-opional-fields" %>
 
--   `security_group_filter` (object) - Filters used to populate the
-    `security_group_ids` field. Example:
-
-    ``` json
-    {
-      "security_group_filter": {
-        "filters": {
-          "tag:Class": "packer"
-        }
-      }
-    }
-    ```
-
-    This selects the SG's with tag `Class` with the value `packer`.
-
-    -   `filters` (map of strings) - filters used to select a
-        `security_group_ids`. Any filter described in the docs for
-        [DescribeSecurityGroups](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeSecurityGroups.html)
-        is valid.
-
-    `security_group_ids` take precedence over this.
-
--   `shutdown_behavior` (string) - Automatically terminate instances on
-    shutdown in case Packer exits ungracefully. Possible values are "stop" and
-    "terminate", default is `stop`.
-
--   `skip_region_validation` (boolean) - Set to true if you want to skip
-    validation of the region configuration option. Default `false`.
-
--   `snapshot_groups` (array of strings) - A list of groups that have access to
-    create volumes from the snapshot(s). By default no groups have permission
-    to create volumes from the snapshot(s). `all` will make the snapshot
-    publicly accessible.
-
--   `snapshot_users` (array of strings) - A list of account IDs that have
-    access to create volumes from the snapshot(s). By default no additional
-    users other than the user creating the AMI has permissions to create
-    volumes from the backing snapshot(s).
-
--   `snapshot_tags` (object of key/value strings) - Tags to apply to snapshot.
-    They will override AMI tags if already applied to snapshot. This is a
-    [template engine](../templates/engine.html), see [Build template
-    data](#build-template-data) for more information.
 
 -   `source_ami_filter` (object) - Filters used to populate the `source_ami`
     field. Example:
