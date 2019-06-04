@@ -71,47 +71,10 @@ builder.
 
 <%= partial "partials/builders/aws-common-opional-fields" %>
 
--   `sriov_support` (boolean) - Enable enhanced networking (SriovNetSupport but
-    not ENA) on HVM-compatible AMIs. If true, add `ec2:ModifyInstanceAttribute`
-    to your AWS IAM policy. Note: you must make sure enhanced networking is
-    enabled on your instance. See [Amazon's documentation on enabling enhanced
-    networking](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/enhanced-networking.html#enabling_enhanced_networking).
-    Default `false`.
-
--   `ssh_keypair_name` (string) - If specified, this is the key that will be
-    used for SSH with the machine. The key must match a key pair name loaded up
-    into Amazon EC2. By default, this is blank, and Packer will generate a
-    temporary keypair unless
-    [`ssh_password`](../templates/communicator.html#ssh_password) is used.
-    [`ssh_private_key_file`](../templates/communicator.html#ssh_private_key_file)
-    or `ssh_agent_auth` must be specified when `ssh_keypair_name` is utilized.
-
--   `ssh_agent_auth` (boolean) - If true, the local SSH agent will be used to
-    authenticate connections to the source instance. No temporary keypair will
-    be created, and the values of `ssh_password` and `ssh_private_key_file`
-    will be ignored. To use this option with a key pair already configured in
-    the source AMI, leave the `ssh_keypair_name` blank. To associate an
-    existing key pair in AWS with the source instance, set the
-    `ssh_keypair_name` field to the name of the key pair.
+<%= partial "partials/builders/helper-communicator/Config-not-required" %>
 
 -   `ssh_private_ip` (boolean) - No longer supported. See
     [`ssh_interface`](#ssh_interface). A fixer exists to migrate.
-
--   `ssh_interface` (string) - One of `public_ip`, `private_ip`, `public_dns`,
-    or `private_dns`. If set, either the public IP address, private IP address,
-    public DNS name or private DNS name will used as the host for SSH. The
-    default behaviour if inside a VPC is to use the public IP address if
-    available, otherwise the private IP address will be used. If not in a VPC
-    the public DNS name will be used. Also works for WinRM.
-
-    Where Packer is configured for an outbound proxy but WinRM traffic should
-    be direct, `ssh_interface` must be set to `private_dns` and
-    `<region>.compute.internal` included in the `NO_PROXY` environment
-    variable.
-
--   `subnet_id` (string) - If using VPC, the ID of the subnet, such as
-    `subnet-12345def`, where Packer will launch the EC2 instance. This field is
-    required if you are using an non-default VPC.
 
 -   `subnet_filter` (object) - Filters used to populate the `subnet_id` field.
     Example:
