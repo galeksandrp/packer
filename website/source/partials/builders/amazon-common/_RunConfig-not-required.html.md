@@ -68,8 +68,7 @@
     shutdown in case Packer exits ungracefully. Possible values are stop and
     terminate. Defaults to stop.
     
--   `security_group_filter` (SecurityGroupFilterOptions) - Filters used to populate the
-    `security_group_ids` field. Example:
+-   `security_group_filter` (SecurityGroupFilterOptions) - Filters used to populate the `security_group_ids` field. Example:
     
     ``` json
     {
@@ -80,6 +79,15 @@
       }
     }
     ```
+    
+    This selects the SG's with tag `Class` with the value `packer`.
+    
+    -   `filters` (map of strings) - filters used to select a
+        `security_group_ids`. Any filter described in the docs for
+        [DescribeSecurityGroups](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeSecurityGroups.html)
+        is valid.
+    
+    `security_group_ids` take precedence over this.
     
 -   `run_tags` (map[string]string) - Tags to apply to the instance
     that is launched to create the AMI. These tags are not applied to the
