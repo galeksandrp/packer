@@ -59,13 +59,12 @@ type AMIConfig struct {
 	// documentation on enabling enhanced
 	// networking](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/enhanced-networking.html#enabling_enhanced_networking).
 	AMIENASupport *bool `mapstructure:"ena_support" required:"false"`
-	// Enable enhanced networking (SriovNetSupport but
-	// not ENA) on HVM-compatible AMIs. If true, add
-	// ec2:ModifyInstanceAttribute to your AWS IAM policy. Note: you must make
-	// sure enhanced networking is enabled on your instance. See Amazon's
-	// documentation on enabling enhanced
-	// networking.
-	// Default false.
+	// Enable enhanced networking (SriovNetSupport but not ENA) on
+	// HVM-compatible AMIs. If true, add `ec2:ModifyInstanceAttribute` to your
+	// AWS IAM policy. Note: you must make sure enhanced networking is enabled
+	// on your instance. See [Amazon's documentation on enabling enhanced
+	// networking](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/enhanced-networking.html#enabling_enhanced_networking).
+	// Default `false`.
 	AMISriovNetSupport bool `mapstructure:"sriov_support" required:"false"`
 	// Force Packer to first deregister an existing
 	// AMI if one with the same name already exists. Default false.
