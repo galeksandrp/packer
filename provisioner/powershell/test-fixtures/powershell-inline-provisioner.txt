@@ -1,0 +1,7 @@
+{
+  "type": "powershell",
+  "inline": [
+    "Write-Host \"{{ build `ID`}} for provisioner.{{ build `PackerRunUUID`}}\""
+  ]
+}
+
