@@ -9,7 +9,6 @@ import (
 
 	"github.com/hashicorp/packer/fix"
 	"github.com/hashicorp/packer/packer"
-	"github.com/hashicorp/packer/template"
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/posener/complete"
@@ -51,11 +50,9 @@ func (c *ValidateCommand) ParseArgs(args []string) (*ValidateArgs, int) {
 }
 
 func (c *ValidateCommand) RunContext(ctx context.Context, cla *ValidateArgs) int {
-	// Parse the template
-	tpl, err := template.ParseFile(cla.Path)
-	if err != nil {
-		c.Ui.Error(fmt.Sprintf("Failed to parse template: %s", err))
-		return 1
+	packerStarter, ret := c.GetConfig(&cla.MetaArgs)
+	if ret != 0 {
+		return ret
 	}
 
 	// If we're only checking syntax, then we're done already
@@ -64,48 +61,38 @@ func (c *ValidateCommand) RunContext(ctx context.Context, cla *ValidateArgs) int
 		return 0
 	}
 
-	// Get the core
-	core, err := c.Meta.Core(tpl, &cla.MetaArgs)
-	if err != nil {
-		c.Ui.Error(err.Error())
-		return 1
-	}
-
 	errs := make([]error, 0)
 	warnings := make(map[string][]string)
 
-	// Get the builds we care about
-	buildNames := core.BuildNames(c.CoreConfig.Only, c.CoreConfig.Except)
-	builds := make([]packer.Build, 0, len(buildNames))
-	for _, n := range buildNames {
-		b, err := core.Build(n)
-		if err != nil {
-			c.Ui.Error(fmt.Sprintf(
-				"Failed to initialize build '%s': %s",
-				n, err))
-			return 1
-		}
+	_, diags := packerStarter.GetBuilds(packer.GetBuildsOptions{
+		Only:   cla.Only,
+		Except: cla.Except,
+	})
 
-		builds = append(builds, b)
+	// here, something could have gone wrong but we still want to run valid
+	if ret := writeDiags(c.Ui, nil, diags); ret != 0 {
+		return ret
 	}
 
-	// Check the configuration of all builds
-	for _, b := range builds {
-		log.Printf("Preparing build: %s", b.Name())
-		warns, err := b.Prepare()
-		if len(warns) > 0 {
-			warnings[b.Name()] = warns
-		}
-		if err != nil {
-			errs = append(errs, fmt.Errorf("Errors validating build '%s'. %s", b.Name(), err))
-		}
+	if cfgType, _ := ConfigType(cla.Path); cfgType == "hcl" {
+		c.Ui.Say("Template validated successfully.")
+		return 0
 	}
 
-	// Check if any of the configuration is fixable
+	// JSON Mode
+	// Check if any of the configuration is fixable JSON only
+	core, ok := packerStarter.(*packer.Core)
+	if !ok {
+		c.Ui.Error("failed to check against fixers")
+	}
+
 	var rawTemplateData map[string]interface{}
 	input := make(map[string]interface{})
 	templateData := make(map[string]interface{})
-	json.Unmarshal(tpl.RawContents, &rawTemplateData)
+	if err := json.Unmarshal(core.Template.RawContents, &rawTemplateData); err != nil {
+		c.Ui.Error(fmt.Sprintf("unable to read the contents of the JSON configuration file: %s", err))
+	}
+
 	for k, v := range rawTemplateData {
 		if vals, ok := v.([]interface{}); ok {
 			if len(vals) == 0 {

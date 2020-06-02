@@ -5,6 +5,31 @@ import (
 	"testing"
 )
 
+func TestValidate(t *testing.T) {
+	tt := []struct {
+		name string
+		path string
+	}{
+		{"ValidJSON", filepath.Join(testFixture("validate"), "template.json")},
+		{"ValidHCL", filepath.Join(testFixture("validate"), "template.pkr.hcl")},
+	}
+
+	c := &ValidateCommand{
+		Meta: testMetaFile(t),
+	}
+
+	for _, tc := range tt {
+		tc := tc
+
+		args := []string{tc.path}
+		// This should pass with a valid configuration version
+		c.CoreConfig.Version = "102.0.0"
+		if code := c.Run(args); code != 0 {
+			fatalCommand(t, c.Meta)
+		}
+	}
+}
+
 func TestValidateCommandOKVersion(t *testing.T) {
 	c := &ValidateCommand{
 		Meta: testMetaFile(t),
