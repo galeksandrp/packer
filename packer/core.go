@@ -1,6 +1,7 @@
 package packer
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"regexp"
@@ -12,6 +13,7 @@ import (
 	multierror "github.com/hashicorp/go-multierror"
 	version "github.com/hashicorp/go-version"
 	"github.com/hashicorp/hcl/v2"
+	"github.com/hashicorp/packer/fix"
 	"github.com/hashicorp/packer/template"
 	"github.com/hashicorp/packer/template/interpolate"
 )
@@ -372,6 +374,81 @@ func (c *Core) Context() *interpolate.Context {
 		TemplatePath:  c.Template.Path,
 		UserVariables: c.variables,
 	}
+}
+
+func (c *Core) Validate(opts GetBuildsOptions) hcl.Diagnostics {
+	_, diags := c.GetBuilds(opts)
+
+	// Let's check against fixers
+	var rawTemplateData map[string]interface{}
+	input := make(map[string]interface{})
+	templateData := make(map[string]interface{})
+	if err := json.Unmarshal(c.Template.RawContents, &rawTemplateData); err != nil {
+		diags = append(diags, &hcl.Diagnostic{
+			Severity: hcl.DiagError,
+			Summary:  fmt.Sprintf("unable to read the contents of the JSON configuration file: %s", err),
+			Detail:   err.Error(),
+		})
+
+		return diags
+	}
+
+	for k, v := range rawTemplateData {
+		if vals, ok := v.([]interface{}); ok {
+			if len(vals) == 0 {
+				continue
+			}
+		}
+		templateData[strings.ToLower(k)] = v
+		input[strings.ToLower(k)] = v
+	}
+
+	// fix rawTemplateData into input
+	for _, name := range fix.FixerOrder {
+		var err error
+		fixer, ok := fix.Fixers[name]
+		if !ok {
+			panic("fixer not found: " + name)
+		}
+		input, err = fixer.Fix(input)
+		if err != nil {
+			diags = append(diags, &hcl.Diagnostic{
+				Severity: hcl.DiagError,
+				Summary:  fmt.Sprintf("Error checking against fixers: %s", err),
+				Detail:   err.Error(),
+			})
+		}
+	}
+	// Hold off on Diff for now - need to think about displaying to user.
+	//// delete empty top-level keys since the fixers seem to add them
+	//// willy-nilly
+	//for k := range input {
+	//ml, ok := input[k].([]map[string]interface{})
+	//if !ok {
+	//continue
+	//}
+	//if len(ml) == 0 {
+	//delete(input, k)
+	//}
+	//}
+	//// marshal/unmarshal to make comparable to templateData
+	//var fixedData map[string]interface{}
+	//// Guaranteed to be valid json, so we can ignore errors
+	//j, _ := json.Marshal(input)
+	//json.Unmarshal(j, &fixedData)
+	//
+	//if diff := cmp.Diff(templateData, fixedData); diff != "" {
+	//
+	//diags = append(diags, &hcl.Diagnostic{
+	//Severity: hcl.DiagWarning,
+	//Summary: `[warning] Fixable configuration found.
+	//You may need to run "packer fix" to get your build to run correctly.
+	//See debug log for more information.`,
+	//Detail: diff,
+	//})
+	//}
+
+	return diags
 }
 
 // validate does a full validation of the template.

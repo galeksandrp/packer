@@ -380,3 +380,8 @@ func (cfg *PackerConfig) GetBuilds(opts packer.GetBuildsOptions) ([]packer.Build
 	}
 	return res, diags
 }
+
+func (c *PackerConfig) Validate(opts packer.GetBuildsOptions) hcl.Diagnostics {
+	_, diags := c.GetBuilds(opts)
+	return diags
+}
