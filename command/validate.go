@@ -47,7 +47,7 @@ func (c *ValidateCommand) ParseArgs(args []string) (*ValidateArgs, int) {
 func (c *ValidateCommand) RunContext(ctx context.Context, cla *ValidateArgs) int {
 	packerStarter, ret := c.GetConfig(&cla.MetaArgs)
 	if ret != 0 {
-		return ret
+		return 1
 	}
 
 	// If we're only checking syntax, then we're done already
@@ -61,8 +61,9 @@ func (c *ValidateCommand) RunContext(ctx context.Context, cla *ValidateArgs) int
 		Except: cla.Except,
 	})
 
-	if len(diags) > 0 {
-		return writeDiags(c.Ui, nil, diags)
+	if diags.HasErrors() {
+		writeDiags(c.Ui, nil, diags)
+		return 1
 	}
 
 	c.Ui.Say("Template validated successfully.")
