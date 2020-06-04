@@ -56,18 +56,23 @@ func (c *ValidateCommand) RunContext(ctx context.Context, cla *ValidateArgs) int
 		return 0
 	}
 
-	diags := packerStarter.Validate(packer.GetBuildsOptions{
+	_, diags := packerStarter.GetBuilds(packer.GetBuildsOptions{
 		Only:   cla.Only,
 		Except: cla.Except,
 	})
 
-	if diags.HasErrors() {
-		writeDiags(c.Ui, nil, diags)
-		return 1
+	c.Ui.Say("Template validated successfully.")
+
+	c.Ui.Say("Checking against known fixers for possible fixes")
+	packerFixer, ok := packerStarter.(packer.ConfigFixer)
+	if !ok {
+		return writeDiags(c.Ui, nil, diags)
 	}
 
-	c.Ui.Say("Template validated successfully.")
-	return 0
+	fixerDiags := packerFixer.FixConfig(packer.FixConfigOptions{DiffOnly: true})
+	diags = append(diags, fixerDiags...)
+
+	return writeDiags(c.Ui, nil, diags)
 }
 
 func (*ValidateCommand) Help() string {

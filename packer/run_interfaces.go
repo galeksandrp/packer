@@ -15,7 +15,6 @@ type BuildGetter interface {
 	// builders.
 	// TODO(azr): rename to builder starter ?
 	GetBuilds(GetBuildsOptions) ([]Build, hcl.Diagnostics)
-	Validate(GetBuildsOptions) hcl.Diagnostics
 }
 
 //go:generate enumer -type FixConfigMode

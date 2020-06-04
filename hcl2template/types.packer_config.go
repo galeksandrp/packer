@@ -362,8 +362,7 @@ func (cfg *PackerConfig) GetBuilds(opts packer.GetBuildsOptions) ([]packer.Build
 				PostProcessors: pps,
 				Prepared:       true,
 			}
-			// Prepare just sets the "prepareCalled" flag on CoreBuild, since
-			// we did all the prep here.
+			// Prepare just sets the "prepareCalled" flag on CoreBuild, since // we did all the prep here.
 			_, err := pcb.Prepare()
 			if err != nil {
 				diags = append(diags, &hcl.Diagnostic{
@@ -379,9 +378,4 @@ func (cfg *PackerConfig) GetBuilds(opts packer.GetBuildsOptions) ([]packer.Build
 		}
 	}
 	return res, diags
-}
-
-func (c *PackerConfig) Validate(opts packer.GetBuildsOptions) hcl.Diagnostics {
-	_, diags := c.GetBuilds(opts)
-	return diags
 }
