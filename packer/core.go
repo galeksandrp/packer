@@ -447,8 +447,8 @@ func (c *Core) FixConfig(opts FixConfigOptions) hcl.Diagnostics {
 
 	if diff := cmp.Diff(templateData, fixedData); diff != "" {
 		diags = append(diags, &hcl.Diagnostic{
-			Severity: hcl.DiagWarning,
-			Summary:  "Fixable configuration found.\nYou may need to run `packer fix` to get your build to run correctly.\nSee debug log for more information.",
+			Severity: hcl.DiagError,
+			Summary:  "Fixable configuration found.\nPlease run `packer fix` to get your build to run correctly.\nSee debug log for more information.",
 			Detail:   diff,
 		})
 	}

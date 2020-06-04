@@ -61,9 +61,6 @@ func (c *ValidateCommand) RunContext(ctx context.Context, cla *ValidateArgs) int
 		Except: cla.Except,
 	})
 
-	c.Ui.Say("Template validated successfully.")
-
-	c.Ui.Say("Checking against known fixers for possible fixes")
 	packerFixer, ok := packerStarter.(packer.ConfigFixer)
 	if !ok {
 		return writeDiags(c.Ui, nil, diags)
