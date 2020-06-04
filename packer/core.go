@@ -380,6 +380,16 @@ func (c *Core) Context() *interpolate.Context {
 func (c *Core) FixConfig(opts FixConfigOptions) hcl.Diagnostics {
 	var diags hcl.Diagnostics
 
+	// Remove once we have support for the Inplace FixConfigMode
+	if opts.Mode != Diff {
+		diags = append(diags, &hcl.Diagnostic{
+			Severity: hcl.DiagError,
+			Summary:  fmt.Sprintf("FixConfig only supports template diff; FixConfigMode %d not supported", opts.Mode),
+		})
+
+		return diags
+	}
+
 	var rawTemplateData map[string]interface{}
 	input := make(map[string]interface{})
 	templateData := make(map[string]interface{})

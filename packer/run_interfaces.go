@@ -31,7 +31,7 @@ const (
 )
 
 type FixConfigOptions struct {
-	DiffOnly bool
+	Mode FixConfigMode
 }
 
 type ConfigFixer interface {

@@ -66,7 +66,9 @@ func (c *ValidateCommand) RunContext(ctx context.Context, cla *ValidateArgs) int
 		return writeDiags(c.Ui, nil, diags)
 	}
 
-	fixerDiags := packerFixer.FixConfig(packer.FixConfigOptions{DiffOnly: true})
+	fixerDiags := packerFixer.FixConfig(packer.FixConfigOptions{
+		Mode: packer.Diff,
+	})
 	diags = append(diags, fixerDiags...)
 
 	return writeDiags(c.Ui, nil, diags)
