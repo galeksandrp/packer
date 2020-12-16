@@ -10,9 +10,6 @@ import (
 	"regexp"
 	"strings"
 
-	packersdk "github.com/hashicorp/packer/packer-plugin-sdk/packer"
-	"github.com/hashicorp/packer/packer-plugin-sdk/plugin"
-
 	alicloudecsbuilder "github.com/hashicorp/packer/builder/alicloud/ecs"
 	amazonchrootbuilder "github.com/hashicorp/packer/builder/amazon/chroot"
 	amazonebsbuilder "github.com/hashicorp/packer/builder/amazon/ebs"
@@ -65,6 +62,9 @@ import (
 	vsphereclonebuilder "github.com/hashicorp/packer/builder/vsphere/clone"
 	vsphereisobuilder "github.com/hashicorp/packer/builder/vsphere/iso"
 	yandexbuilder "github.com/hashicorp/packer/builder/yandex"
+	amazonamidatasource "github.com/hashicorp/packer/datasource/amazon/ami"
+	packersdk "github.com/hashicorp/packer/packer-plugin-sdk/packer"
+	"github.com/hashicorp/packer/packer-plugin-sdk/plugin"
 	alicloudimportpostprocessor "github.com/hashicorp/packer/post-processor/alicloud-import"
 	amazonimportpostprocessor "github.com/hashicorp/packer/post-processor/amazon-import"
 	artificepostprocessor "github.com/hashicorp/packer/post-processor/artifice"
@@ -210,6 +210,10 @@ var PostProcessors = map[string]packersdk.PostProcessor{
 	"vsphere-template":     new(vspheretemplatepostprocessor.PostProcessor),
 	"yandex-export":        new(yandexexportpostprocessor.PostProcessor),
 	"yandex-import":        new(yandeximportpostprocessor.PostProcessor),
+}
+
+var DataSources = map[string]packersdk.DataSource{
+	"amazon-ami": new(amazonamidatasource.DataSource),
 }
 
 var pluginRegexp = regexp.MustCompile("packer-(builder|post-processor|provisioner)-(.+)")
