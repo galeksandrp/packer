@@ -81,7 +81,10 @@ const (
 func (cfg *PackerConfig) EvalContext(variables map[string]cty.Value) *hcl.EvalContext {
 	inputVariables, _ := cfg.InputVariables.Values()
 	localVariables, _ := cfg.LocalVariables.Values()
-	dataSources, _ := cfg.DataSources.Values(cfg.dataStoreSchemas)
+	dataSources := map[string]cty.Value{}
+	if cfg.DataSources != nil {
+		dataSources, _ = cfg.DataSources.Values(cfg.dataStoreSchemas)
+	}
 	ectx := &hcl.EvalContext{
 		Functions: Functions(cfg.Basedir),
 		Variables: map[string]cty.Value{
@@ -336,8 +339,6 @@ func (cfg *PackerConfig) getCoreBuildPostProcessors(source SourceBlock, blocksLi
 func (cfg *PackerConfig) GetBuilds(opts packer.GetBuildsOptions) ([]packersdk.Build, hcl.Diagnostics) {
 	res := []packersdk.Build{}
 	var diags hcl.Diagnostics
-
-	// TODO sylviamoss start/configure data store here
 
 	for _, build := range cfg.Builds {
 		for _, from := range build.Sources {
